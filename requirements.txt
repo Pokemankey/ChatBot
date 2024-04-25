@@ -1,0 +1,6 @@
+pytorch
+langchain
+langchain-chroma
+sentence-transformers
+dotenv
+flask
