@@ -3,9 +3,8 @@ from langchain_chroma import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from flask_cors import CORS
 from langchain.chains import LLMChain
-from langchain.chains import retrieval_qa
 from langchain_core.messages import SystemMessage
-from langchain.prompts import MessagesPlaceholder,HumanMessagePromptTemplate, SystemMessagePromptTemplate, ChatPromptTemplate
+from langchain.prompts import HumanMessagePromptTemplate, ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_community.chat_models import ChatOllama
 from flask import Flask, request, jsonify
@@ -15,10 +14,11 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-
-chat = ChatOllama(model="llama3")
+chat = ChatOllama(model="llama3", temperature=0.3)
 
 embeddings = HuggingFaceEmbeddings(model_name="all-mpnet-base-v2")
+
+sysMessage = "Hello! I'm Srilakshman's chatbot here to assist you with questions related to his professional portfolio. Please feel free to ask about his projects, skills, experiences, or anything pertinent to his work and career. However, I'm programmed to refrain from responding to irrelevant or inappropriate inquiries. Let's keep the conversation focused on Srilakshman's qualifications and professional endeavors. How can I assist you today? I will be answering the questions in the first person."
 
 db = Chroma(
     embedding_function=embeddings,
@@ -27,7 +27,7 @@ db = Chroma(
 prompt = ChatPromptTemplate(
     input_variables=["query"],
     messages=[
-        SystemMessage(content="You're a chatbot that is integrated in a online portfolio website of a person named Srilakshman. You're to use the context given and answer the questions of the user who want to know about Srilakshman. The context is information regarding Srilakshman."),
+        SystemMessage(content=sysMessage),
         HumanMessagePromptTemplate.from_template(
             "Answer the question based only on the following context(But dont mention that you are answering based on context): {context} \n--\nAnswer the question based on the above context: {query}"
         )
